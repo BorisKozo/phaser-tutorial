@@ -1,10 +1,13 @@
 ﻿(function () {
 
   var Level = function () {
-    this.preload = function () {
 
+    var player;
+    this.preload = function () {
+      game.load.image('player_ship', 'assets/sprites/player.png');
     };
     this.create = function () {
+      player = game.add.sprite(50, 10, 'player_ship');
     };
 
     this.update = function () {
