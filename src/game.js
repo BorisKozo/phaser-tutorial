@@ -6,10 +6,11 @@
     var cursors;
     var clouds, cloudsForeground;
     var enemies,enemy;
-    var lasers, laserTime = 0, laser;
-    var scoreText, score = 0;
+    var lasers, laserTime, laser;
+    var scoreText, score;
     var explosions;
-    var laserSound, explosionSound
+    var laserSound, explosionSound;
+    var lives, livesText;
 
     function collisionHandler(laser, enemy) {
       var explosion = explosions.create(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 'explosion');
@@ -23,6 +24,12 @@
       score++;
       scoreText.setText("Score: " + score);
     }
+
+    this.init = function () {
+      laserTime = 0;
+      score = 0;
+      lives = 5
+    };
 
     this.preload = function () {
       game.load.image('player_ship', 'assets/sprites/player.png');
@@ -61,6 +68,13 @@
         fill: "#ff0044",
         align: "left"
       });
+
+      livesText = game.add.text(game.camera.width - 10, 10, "Lives: " + lives, {
+        font: "38px Arial",
+        fill: "#ff0044",
+        align: "left"
+      });
+      livesText.anchor.setTo(1, 0);
 
 
       laserSound = game.add.audio('laser');
@@ -101,6 +115,19 @@
       }
 
       game.physics.arcade.overlap(lasers, enemies, collisionHandler, null, this);
+
+      enemies.forEachAlive(function (enemy) {
+        if (enemy.x <= 0) {
+          enemy.kill();
+          lives--;
+        }
+      });
+
+      if (lives <= 0) {
+        game.state.start('EndGame', true, false, score);
+      }
+
+      livesText.setText("Lives: " + lives);
     }
 
     this.render = function () {
@@ -108,6 +135,51 @@
     };
   }
 
-  var game = new Phaser.Game(800, 600, Phaser.AUTO, 'ship-shooting-forward', new Level());
+  var EndGame = function () {
+    var endScore = 0;
+    this.init = function (score) {
+      endScore = score || 0;
+    }
 
+    this.create = function () {
+
+     var text = game.add.text(game.world.centerX, game.world.centerY - 70, "Game Over!", {
+        font: "65px Arial",
+        fill: "#ff0044",
+        align: "center"
+      });
+
+     text.anchor.setTo(0.5, 0.5);
+
+     text = game.add.text(game.world.centerX, game.world.centerY, "Score: "+endScore, {
+       font: "65px Arial",
+       fill: "#ff0044",
+       align: "center"
+     });
+
+     text.anchor.setTo(0.5, 0.5);
+
+     text = game.add.text(game.world.centerX, game.world.centerY+150, "Press Space to Continue", {
+       font: "36px Arial",
+       fill: "#ff0044",
+       align: "center"
+     });
+
+     text.anchor.setTo(0.5, 0.5);
+
+     game.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR]);
+    };
+
+    this.update = function () {
+      if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+        game.state.start('Level');
+      }
+    }
+  }
+
+  var game = new Phaser.Game(800, 600, Phaser.AUTO, 'ship-shooting-forward');
+
+  game.state.add('Level', new Level());
+  game.state.add('EndGame', new EndGame());
+  game.state.start('Level');
 })();
