@@ -8,6 +8,11 @@
     var enemies,enemy;
     var lasers, laserTime=0, laser;
 
+    function collisionHandler(laser, enemy) {
+      laser.kill();
+      enemy.kill();
+    }
+
     this.preload = function () {
       game.load.image('player_ship', 'assets/sprites/player.png');
       game.load.image('enemy_ship', 'assets/sprites/enemy.png');
@@ -67,6 +72,7 @@
         enemy.body.velocity.x = -200;
       }
 
+      game.physics.arcade.overlap(lasers, enemies, collisionHandler, null, this);
     }
 
     this.render = function () {
