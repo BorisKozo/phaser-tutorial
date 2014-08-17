@@ -9,6 +9,7 @@
     var lasers, laserTime = 0, laser;
     var scoreText, score = 0;
     var explosions;
+    var laserSound, explosionSound
 
     function collisionHandler(laser, enemy) {
       var explosion = explosions.create(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, 'explosion');
@@ -16,6 +17,7 @@
       explosion.animations.add('explode');
       //name, framerate, loop, killOnComplete
       explosion.animations.play('explode', 60, false, true);
+      explosionSound.play();
       laser.kill();
       enemy.kill();
       score++;
@@ -29,6 +31,9 @@
       game.load.image('clouds', 'assets/backgrounds/clouds.png');
       game.load.spritesheet('explosion', 'assets/sprites/explosion.png', 256, 256);
       game.load.image('clouds_foreground', 'assets/backgrounds/clouds_foreground.png');
+
+      game.load.audio('explode', 'assets/sounds/explode.ogg');
+      game.load.audio('laser', 'assets/sounds/laser.ogg');
     };
 
     this.create = function () {
@@ -57,6 +62,10 @@
         align: "left"
       });
 
+
+      laserSound = game.add.audio('laser');
+      explosionSound = game.add.audio('explode');
+
     };
 
     this.update = function () {
@@ -79,6 +88,7 @@
           laserTime = game.time.now + 1000;
           laser.checkWorldBounds = true;
           laser.outOfBoundsKill = true;
+          laserSound.play();
         }
       }
 
