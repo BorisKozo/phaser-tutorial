@@ -6,11 +6,14 @@
     var cursors;
     var clouds, cloudsForeground;
     var enemies,enemy;
-    var lasers, laserTime=0, laser;
+    var lasers, laserTime = 0, laser;
+    var scoreText, score = 0;
 
     function collisionHandler(laser, enemy) {
       laser.kill();
       enemy.kill();
+      score++;
+      scoreText.setText("Score: " + score);
     }
 
     this.preload = function () {
@@ -39,6 +42,13 @@
       lasers.physicsBodyType = Phaser.Physics.ARCADE;
 
       cloudsForeground = game.add.tileSprite(0, 0, 1000, 600, 'clouds_foreground');
+
+      scoreText = game.add.text(10, 10, "Score: " + score, {
+        font: "38px Arial",
+        fill: "#ff0044",
+        align: "left"
+      });
+
     };
 
     this.update = function () {
